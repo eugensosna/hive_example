@@ -1,5 +1,7 @@
 # hive_example
-
+```
+flutter packages pub  run build_runner build
+```
 A new Flutter project.
 
 ## Getting Started
