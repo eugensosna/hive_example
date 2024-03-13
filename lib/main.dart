@@ -30,16 +30,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+    
   final String title;
 
   @override
@@ -47,7 +38,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+
 
   void _incrementCounter() {
     setState(() {
@@ -56,7 +49,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
     });
   }
 
@@ -78,40 +70,97 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      body: Column(
+        children: [
+          const SizedBox(height: 10.0),
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        hintText: "Name",
+                        border: OutlineInputBorder(),
+                        ),
+                    ),
+                    const SizedBox(height: 10.0,),
+                    TextField(
+                      controller: ageController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        border:  OutlineInputBorder(),
+                        hintText: "Age",
+                      ),
+                    ),
+                    const SizedBox(height: 10.0,),
+                    TextButton(onPressed: (){
+                      setState(() {
+                        Person pers = Person(name: nameController.text, age: int.parse(ageController.text) );
+                        boxPersons.put(
+                          //'key_${nameController.text}',
+                          pers.hashCode,
+                          pers
+                        );
+                      });
+
+                    },
+                     child: const Text("Add"))
+                  ],
+                ),
+              ),
+            
+          ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Card(
+                child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ListView.builder(
+                        itemCount: boxPersons.length,
+                        itemBuilder: (context, index){
+                          Person pers = boxPersons.getAt(index);
+                              return ListTile(
+                                    leading: IconButton(
+                                      onPressed: (){
+                                        setState(() {
+                                          boxPersons.deleteAt(index);
+                                        });
+                                        //Todo .deleteAtA()
+
+                                      },
+                                      icon: const Icon(
+                                        Icons.remove,
+                                      ),
+                                      ),
+                                      title: Text(pers.name),
+                                      subtitle: const Text("Name"),
+                                      trailing: Text('age: ${pers.age.toString()}'),
+                              );
+                        },
+
+                    ),
+                    ),
+              )
+            )
+          ),
+          TextButton.icon(
+            onPressed: (){
+              setState(() {
+                 boxPersons.clear();
+              });
+            },
+            icon: const Icon(Icons.delete_outline),
+            label: const Text("Delete All"),
+          ),
+
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
